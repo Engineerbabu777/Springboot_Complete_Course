@@ -1,4 +1,4 @@
-package loose;
+package com.example.loose;
 
 public class EmailNotification implements NotificationService{
 

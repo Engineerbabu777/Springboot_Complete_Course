@@ -11,4 +11,15 @@
     <bean id="morningBean" class="com.example.demo.MorningService">
     </bean>
 
+    <bean id="emailNotificationService" class="com.example.loose.EmailNotification">
+    </bean>
+    <bean id="smsNotificationService" class="com.example.loose.SMSNotificationService">
+    </bean>
+
+    <bean id="userService" class="com.example.loose.UserService">
+        <constructor-arg ref="emailNotificationService"/>
+    </bean>
+
+
+
 </beans>
