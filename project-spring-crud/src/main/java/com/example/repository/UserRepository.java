@@ -1,6 +1,6 @@
-package repository;
+package com.example.repository;
 
-import db.DatabaseConnection;
+import com.example.db.DatabaseConnection;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public class UserRepository {
     }
 
     public List<String> adduser(String user){
-        System.out.println("Added new User in DB");
+        db.add(user);
         return findAll();
     }
 }
