@@ -3,6 +3,7 @@ package com.demo.first.app;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,9 +15,13 @@ public class UserController {
 
     @PostMapping
     public String createUser(@RequestBody User user){
-        System.out.println("Trying to create new user with email ::-> "+user.getEmail());
-        userDB.putIfAbsent(user.getId(), user);
-        return "User has been created";
+        if(userDB.containsKey(user.getId())){
+            return "User already exists in database";
+        }else{
+            System.out.println("Trying to create new user with email ::-> "+user.getEmail());
+            userDB.putIfAbsent(user.getId(), user);
+            return "User has been created";
+        }
     }
 
     @PutMapping
@@ -33,13 +38,13 @@ public class UserController {
     }
 
     @GetMapping
-    public Map<Integer, User> getUsers(){
+    public ArrayList<User> getUsers(){
         System.out.println("Trying to retrieve users ::-> ");
-        return userDB;
+        return new ArrayList<>(userDB.values());
     }
 
     @DeleteMapping("/{userId}")
-    public String deleteUser(@PathVariable Integer userId){
+    public String deleteUser(@PathVariable int userId){
         System.out.println("Trying to delete with id ::-> " + userId);
 
         if(userDB.containsKey(userId)){

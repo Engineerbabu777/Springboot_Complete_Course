@@ -1,0 +1,51 @@
+package com.demo.first.app;
+
+import jakarta.websocket.server.PathParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/notes/")
+public class NotesController {
+    private Map<Integer, Note> notes = new HashMap<>();
+
+
+    @PostMapping
+    public Map<String,String> createNote(@RequestBody Note note){
+        if(notes.containsKey(note.getId())){
+            return Map.of("message","Note with this ID already exists");
+        }else{
+            notes.putIfAbsent(note.getId(),note);
+            return Map.of("message","Note has been created in Database");
+        }
+    }
+
+    @PutMapping
+    public Map<String,String> updateNote(@RequestBody Note note){
+        if(notes.containsKey(note.getId())){
+            return Map.of("message","Note with this ID not exist in database");
+        }else{
+            notes.put(note.getId(),note);
+            return Map.of("message","Note has been updated in Database");
+        }
+    }
+
+    @GetMapping
+    public List<Note> deleteNote(){
+        return new ArrayList<Note>(notes.values());
+    }
+
+    @DeleteMapping("{noteId}")
+    public Map<String,String> deleteNote(@PathVariable Integer noteId){
+        if(notes.containsKey(noteId)){
+            notes.remove(noteId);
+            return Map.of("message","Note has been deleted from Database");
+        }else{
+            return Map.of("message","Note with this ID not exist in database");
+        }
+    }
+}
