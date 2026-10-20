@@ -1,5 +1,6 @@
 package com.demo.first;
 
+import com.demo.first.app.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,7 +19,7 @@ public class HelloController {
 //    @GetMapping("/user")
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     public User getUser(){
-        return new User(1, "Jhon", "jhon@email.com");
+        return new User(1, "John", "jhon@email.com");
     }
 
 }
