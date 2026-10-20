@@ -1,6 +1,5 @@
 package com.demo.first.app;
 
-import jakarta.websocket.server.PathParam;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -11,7 +10,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/notes/")
 public class NotesController {
-    private Map<Integer, Note> notes = new HashMap<>();
+    private final Map<Integer, Note> notes = new HashMap<>();
 
 
     @PostMapping
@@ -46,6 +45,15 @@ public class NotesController {
             return Map.of("message","Note has been deleted from Database");
         }else{
             return Map.of("message","Note with this ID not exist in database");
+        }
+    }
+
+    @GetMapping("{noteId}")
+    public Map<String,String> getNoteById(@PathVariable Integer noteId){
+        if(!notes.containsKey(noteId)){
+            return Map.of("message","Note with this ID not exist in database");
+        }else{
+            return  Map.of("note",notes.get(noteId).getNote(), "isDone",notes.get(noteId).getIsDone(), "noteId",String.valueOf(notes.get(noteId).getId()));
         }
     }
 }

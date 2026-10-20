@@ -2,7 +2,7 @@ package com.demo.first.app;
 
 public class Note {
     private String note;
-    private int id;
+    private Integer id;
     private String isDone;
 
     public String getNote() {
