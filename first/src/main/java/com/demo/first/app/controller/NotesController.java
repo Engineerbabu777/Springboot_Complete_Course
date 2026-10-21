@@ -1,5 +1,6 @@
-package com.demo.first.app;
+package com.demo.first.app.controller;
 
+import com.demo.first.app.model.Note;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;

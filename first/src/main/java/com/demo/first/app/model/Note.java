@@ -1,4 +1,4 @@
-package com.demo.first.app;
+package com.demo.first.app.model;
 
 public class Note {
     private String note;
