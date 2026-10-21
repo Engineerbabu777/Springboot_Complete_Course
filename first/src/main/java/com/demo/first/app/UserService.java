@@ -35,7 +35,7 @@ public class UserService {
             userDB.put(user.getId(), user);
             return true;
         } else {
-            return false;
+            throw new IllegalArgumentException("User with this ID "+user.getId() + " not exists");
         }
     }
 

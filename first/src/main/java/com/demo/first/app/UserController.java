@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -33,11 +34,10 @@ public class UserController {
     @PutMapping
     public ResponseEntity<String> updateUser(@RequestBody User user){
         final boolean response = this.userService.updateUser(user);
-        if(response){
-            return ResponseEntity.status(HttpStatus.CREATED).body("Updated user in database");
-        }else{
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Unable to find user with id in database");
-        }
+           if(response){
+               return ResponseEntity.status(HttpStatus.CREATED).body("Updated user in database");
+           }
+               return ResponseEntity.status(HttpStatus.CONFLICT).body("Unable to find user with id in database");
     }
 
     @GetMapping
@@ -107,5 +107,18 @@ public class UserController {
     }
 
 
+
+    // EXCEPTION HANDLING METHOD!
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalArgsException(
+            IllegalArgumentException exception
+    ){
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Bad Request");
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("message", exception.getMessage());
+        errorResponse.put("status", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
 }
