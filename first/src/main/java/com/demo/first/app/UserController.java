@@ -13,56 +13,60 @@ public class UserController {
 
     private final Map<Integer, User> userDB = new HashMap<>();
 
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+
     @PostMapping
     public ResponseEntity<String> createUser(@RequestBody User user){
-        if(userDB.containsKey(user.getId())){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists in database");
-        }else{
-            System.out.println("Trying to create new user with email ::-> "+user.getEmail());
-            userDB.putIfAbsent(user.getId(), user);
+        final boolean response = this.userService.createUser(user);
+        if(response){
             return ResponseEntity.status(HttpStatus.CREATED).body("User has been created");
+        }else{
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists in database");
         }
     }
 
     @PutMapping
     public ResponseEntity<String> updateUser(@RequestBody User user){
-        System.out.println("Trying to update existing user with email ::-> " + user.getEmail());
-        if(userDB.containsKey(user.getId())){
-            // update
-            userDB.put(user.getId(), user);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Updated user in database");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Unable to find user with id in database");
+        final boolean response = this.userService.updateUser(user);
+        if(response){
+            return ResponseEntity.status(HttpStatus.CREATED).body("Updated user in database");
+        }else{
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Unable to find user with id in database");
         }
     }
 
     @GetMapping
     public ResponseEntity<Collection<User>> getUsers(){
-        System.out.println("Trying to retrieve users ::-> ");
-        return ResponseEntity.ok(userDB.values());
+        return ResponseEntity.ok(userService.getUsers());
 //        return ResponseEntity.status(HttpStatus.OK).body(userDB.values());
     }
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<String> deleteUser(@PathVariable int userId){
-        System.out.println("Trying to delete with id ::-> " + userId);
+        final boolean response = this.userService.deleteUser(userId);
 
-        if(userDB.containsKey(userId)){
-            userDB.remove(userId);
+        if(response){
             return ResponseEntity.ok("User has been deleted from database");
 //            return ResponseEntity.status(HttpStatus.OK).body("User has been deleted from database");
         } else {
-            // error
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Unable to delete user with id as its not exists");
         }
     }
 
     @GetMapping("{id}")
     public ResponseEntity<User> getUser(@PathVariable Integer id){
-        if(!userDB.containsKey(id)){
+
+        final User response = this.userService.getUser(id);
+        if(response == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.ok(userDB.get(id));
+        return ResponseEntity.ok(response);
+
     }
 
     @GetMapping("{id}/order/{orderId}/sample/{sampleId}")
@@ -89,11 +93,7 @@ public class UserController {
             @RequestParam(required = false, defaultValue = "aw") String name,
             @RequestParam(required = false, defaultValue = "aw") String email
     ){
-        System.out.println(name);
-
-        List<User> users = userDB.values().stream().filter(u -> u.getName().contains(name)).filter(u -> u.getEmail().contains(email)).toList();
-
-        return ResponseEntity.status(200).body(users);
+        return ResponseEntity.status(200).body(userService.searchUsers(name, email));
     }
 
     @GetMapping("info")
