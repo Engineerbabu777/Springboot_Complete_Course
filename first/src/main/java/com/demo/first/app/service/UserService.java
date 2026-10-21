@@ -1,6 +1,9 @@
 package com.demo.first.app.service;
 
+import com.demo.first.app.exceptions.UserNotFoundException;
 import com.demo.first.app.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -13,12 +16,15 @@ import java.util.Map;
 public class UserService {
 
     private final Map<Integer, User> userDB = new HashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     public boolean createUser(User user){
         if(userDB.containsKey(user.getId())){
             return false;
         }else{
-            System.out.println("Trying to create new user with email ::-> "+user.getEmail());
+            logger.info("Trying to create new user with email ::-> "+user.getEmail() + "...INFO");
+            logger.debug("Trying to create new user with email ::-> "+user.getEmail() + "...DEBUG");
+            logger.trace("Trying to create new user with email ::-> "+user.getEmail() + "...TRACE");
             userDB.putIfAbsent(user.getId(), user);
             return true;
         }
@@ -32,7 +38,7 @@ public class UserService {
             userDB.put(user.getId(), user);
             return true;
         } else {
-            throw new IllegalArgumentException("User with this ID "+user.getId() + " not exists");
+            throw new UserNotFoundException("User with this ID "+user.getId() + " not exists");
         }
     }
 
@@ -48,7 +54,7 @@ public class UserService {
             userDB.remove(userId);
             return true;
         } else {
-            return false;
+            throw new UserNotFoundException("User with this ID "+userId + " not exists");
         }
     }
 

@@ -1,8 +1,9 @@
 package com.demo.first.app.exceptions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -13,12 +14,14 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     // EXCEPTION HANDLING METHOD!
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler({ UserNotFoundException.class, IllegalArgumentException.class})
     public ResponseEntity<Map<String, Object>> handleIllegalArgsException(
-            IllegalArgumentException exception
+            Exception exception
     ){
+        logger.error("Error when finding User --> "+ exception);
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("error", "Bad Request");
         errorResponse.put("timestamp", LocalDateTime.now());
@@ -32,6 +35,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleMethodNotSupported(
             HttpRequestMethodNotSupportedException exception
     ){
+        logger.error("Request Method Not Allowed --> "+ exception);
+
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("error", "Method not allowed.");
         errorResponse.put("timestamp", LocalDateTime.now());
