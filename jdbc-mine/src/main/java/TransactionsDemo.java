@@ -20,6 +20,7 @@ public class TransactionsDemo {
             insertItem(conn, orderId1, "Laptop", 1, 2000.0);
             insertItem(conn, orderId2, "Mac", 1, 12000.0);
 
+            conn.commit(); // MANUAL COMMIT!
         } catch (Exception e) {
 
             e.printStackTrace();
