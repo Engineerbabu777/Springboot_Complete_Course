@@ -10,17 +10,32 @@ public class TransactionsDemo {
         try (Connection conn = DriverManager.getConnection(URL,USER,PASSWORD)){
             System.out.println("Database Connected :)");
 
-            conn.setAutoCommit(false);
+            try {
+                conn.setAutoCommit(false);
 
-            // INSERT INTO ORDER ITEM
-            int orderId1 = insertOrder(conn, 101, "Alice01", 2000.0);
-            int orderId2 = insertOrder(conn, 102, "Bob01", 4440.0);
+                // INSERT INTO ORDER ITEM
+                int orderId1 = insertOrder(conn, 101, "Alice01", 2000.0);
+                int orderId2 = insertOrder(conn, 102, "Bob01", 4440.0);
 
-            // INSERT INTO ORDER ITEM
-            insertItem(conn, orderId1, "Laptop", 1, 2000.0);
-            insertItem(conn, orderId2, "Mac", 1, 12000.0);
+                System.out.println("THROWING ERROR---");
+//                int a = 10/0;
+                // INSERT INTO ORDER ITEM
+                insertItem(conn, orderId1, "Laptop", 1, 2000.0);
+                insertItem(conn, orderId2, "Mac", 1, 12000.0);
 
-            conn.commit(); // MANUAL COMMIT!
+                conn.commit();
+                System.out.println("TRANSCRION COMPLETED ");
+            } catch (Exception e) {
+                e.printStackTrace();
+                conn.rollback();
+                System.out.println("Operation rolled back");
+            }
+            finally {
+                conn.setAutoCommit(true);
+
+            }
+
+           // MANUAL COMMIT!
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -44,18 +59,19 @@ public class TransactionsDemo {
                 if(rs.next()){
                     int orderId = rs.getInt(1);
                     System.out.println("ORDER ID: "+ orderId);
+
+                    return orderId;
                 }else{
                     throw new SQLException("Order ID not generated");
                 }
 
             }
-            return rows;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static int insertItem(Connection conn, int orderId, String productName, int quantity, Double price){
+    public static int insertItem(Connection conn, int orderId, String productName, int quantity, Double price) throws SQLException{
         String sql = "INSERT INTO order_items(order_id, product_name, price, quantity) VALUES(?, ?, ?, ?)";
 
         try(PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -67,8 +83,6 @@ public class TransactionsDemo {
             int rows = pstmt.executeUpdate();
 
             System.out.println("Inserted into OrderItems: " + rows);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return 0;
     }
